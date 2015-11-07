@@ -20,7 +20,8 @@ names(files) <- gsub(".Fare", "", names(files), fixed=TRUE)
 dat <- lapply(files, read.csv)
 
 ## Create Market
-dat$MarketTable <- dplyr::full_join(dat$AirportRegion, dat$GeographicRegion, by = "GeographicRegionId")
+dat$MarketTable <- dplyr::full_join(dat$AirportRegion, dat$GeographicRegion, by = "GeographicRegionId") %>%
+  dplyr::full_join(dat$MarketGroup, by = "MarketGroupId")
 
 ## Tidy Date & Reformat Day and Time columns as such
 dat$Fares <- tidyr::separate(dat$Fares, FlightDate, c("Day", "Time"), sep = " ") 

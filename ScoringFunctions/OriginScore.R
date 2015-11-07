@@ -8,6 +8,7 @@
 ##' @import dplyr
 ##' @return scores a vector of scores (length n) in [0, 1] with higher values indicating more preferable origins of flights in fares
 
+
 OriginScore <- function(origin, fares, airportRegions, nearby=FALSE) {
   if(is.null(origin)) {
     return(rep(0, nrow(fares)))
