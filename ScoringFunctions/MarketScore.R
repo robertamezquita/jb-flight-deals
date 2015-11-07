@@ -23,7 +23,6 @@
 ##' 
 ##' @examples
 ##' MarketScore(1, dat$Fare, dat$MarketTable)
-    market <- 1
 
 MarketScore <- function(market, flights, marketTable) {
     ## Input is not used
