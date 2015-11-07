@@ -9,6 +9,8 @@ library(markdown)
 library(DT)                     # Interface to the DataTables javascript library
 library(dplyr)
 library(tidyr)
-source("DataParser/DataParser.R")
+source("DataParser/DataParser.R")       # read in data
+funcs <- dir("ScoringFunctions", full.names=TRUE)
+lapply(funcs, source)                   # source functions
 
 ## Global variables - used across pages and apps

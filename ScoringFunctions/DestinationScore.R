@@ -9,7 +9,7 @@
 ##' @import dplyr
 ##' @return scores a vector of scores (length n) in [0, 1] with higher values indicating more preferable dests of flights in fares
 DestScore <- function(dest, fares, airportRegions, nearby=FALSE, nearbyWeight=0.75) {
-  if(is.na(origin)) {
+  if(is.null(dest)) {
     return(rep(0, nrow(fares)))
   }
 

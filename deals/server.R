@@ -21,13 +21,23 @@ outDat <- reactive({
   ## input$dest
   ## input$nonstop (TRUE /FALSE)
   ## input$dates (vector of length 2)
-  ord <- 1:nrow(fares)
+  ## ## Debugging Only:
+  ## input <- list(origin="BDL", dest="MCO")
+
+  scoreList <- list()
+  scoreList$OriginScore <- OriginScore(input$origin, fares=fares,
+                                       airportRegions=dat$AirportRegion)
+  scoreList$DestScore <- DestScore(input$dest, fares=fares,
+                                      airportRegions=dat$AirportRegion)
+
+  scoreMat <- Reduce(cbind, scoreList)
+  ord <- CumulativeScore(scoreMat)
 
   ## Handle what columns to show depending on whether price should be
   ## shown as dollars, points, or both
-  if(is.null(input$faretype)) {
-    return(NULL)
-  }
+  ## if(is.null(input$faretype)) {
+  ##   return(NULL)
+  ## }
   if ("points" %in% input$faretype) {
     fares$Points <- fares$PointsFare + fares$PointsTax
     selCols <- c("Points", selCols)

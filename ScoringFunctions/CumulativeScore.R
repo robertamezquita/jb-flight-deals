@@ -8,9 +8,9 @@
 CumulativeScore <- function(scoreMatrix, coef = matrix(rep(1, ncol(scoreMatrix)), nrow = 1)) {
     ## Multiply coefficients by scoreMatrix & rank order
     finalrank <- coef %*% t(scoreMatrix) %>%
-      order
+      order(decreasing = TRUE)
 
     ## Success??
     return(finalrank)
 }
-    
+
