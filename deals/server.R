@@ -1,5 +1,9 @@
 ## Server.R for deals
 
+## Add tooltips to UI
+addTooltip(session, id="origin", title = "This is an input.",
+                      placement = "left", trigger = "hover")
+
 ## Determine how budget should show dollars vs points
 observe( {
   if(input$pointsFlag) {
@@ -59,12 +63,14 @@ outDat <- reactive({
   ## ##  
 
   scoreList <- list()
-  scoreList$OriginScore <- OriginScore(input$origin, flights=fares,
-                                       airportRegions=dat$AirportRegion,
-                                       nearby=input$nearbyOrigin)
-  scoreList$DestScore <- DestScore(input$dest, flights=fares,
-                                   airportRegions=dat$AirportRegion,
-                                   nearby=input$nearbyDest)
+  scoreList$OriginScore <- AirportScore(input$origin, flights=fares,
+                                        type="Origin",
+                                        airportRegions=dat$AirportRegion,
+                                        nearby=input$nearbyOrigin)
+  scoreList$DestScore <- AirportScore(input$dest, flights=fares,
+                                      type="Destination",
+                                      airportRegions=dat$AirportRegion,
+                                      nearby=input$nearbyDest)
   scoreList$BudgetScore <- BudgetScore(input$budget, flights=fares,
                                        type=ifelse(input$pointsFlag, "points", "dollars"))
   scoreList$CalendarScore <- CalendarScore(dateOutboundStart=input$dates[1],

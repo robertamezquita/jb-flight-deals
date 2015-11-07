@@ -3,6 +3,7 @@ rm(list=ls())
 
 ## Load packages
 library(shiny)
+library(shinyBS)                        # Additional Bootstrap Controls
 library(shinydashboard)
 library(shinyapps)
 library(markdown)

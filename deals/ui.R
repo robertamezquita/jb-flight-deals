@@ -4,6 +4,8 @@ deals.box <- fluidPage(
       selectInput("origin", "From", multiple=TRUE,
                   choices=as.character(sort(unique(dat$Fare$Origin)))),
       checkboxInput("nearbyOrigin", "Nearby?", value=FALSE),
+      bsTooltip(id = "origin", title = "This is an input",
+                          placement = "left", trigger = "hover"),
       selectInput("dest", "To", multiple=TRUE,
                   choices=as.character(sort(unique(dat$Fare$Destination)))),
       checkboxInput("nearbyDest", "Nearby?", value=FALSE),      
