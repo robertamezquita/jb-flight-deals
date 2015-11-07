@@ -9,7 +9,6 @@ CumulativeScore <- function(scoreMatrix, coef = matrix(rep(1, ncol(scoreMatrix))
     ## Multiply coefficients by scoreMatrix to get score
     finalscore <- coef %*% t(scoreMatrix)
 
-    ## Success??
-    return(finalscore)
+    return(as.vector(finalscore))
 }
 

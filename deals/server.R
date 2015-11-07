@@ -99,8 +99,8 @@ output$rankTable <- DT::renderDataTable(outDat(),
                                         escape=FALSE,  # for allowing HTML to be rendered
                                         extensions=c("Scroller", "ColReorder", "ColVis"),
                                         options = list(
-                                          columnDefs = list(list(orderable = FALSE,
-                                            targets = 0:(ncol(outDat())-1))),
+                                          ## columnDefs = list(list(orderable = FALSE,
+                                          ##   targets = 0:(ncol(outDat())-1))),
                                           deferRender = TRUE,
                                           dom = 'C<"clear">frtSR',
                                           scrollY = "600px",
