@@ -26,7 +26,7 @@
 
 DestinationTypeScore <- function(destinationType, flights, cityPairDestinationType) {
     ## Input is not used
-    if (is.na(market)) {
+    if (is.null(destinationType)) {
         return(rep(0, nrow(flights)))
     }
 
