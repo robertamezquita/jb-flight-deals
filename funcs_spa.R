@@ -8,6 +8,9 @@
 ##' @import dplyr
 ##' @return scores a vector of scores (length n) in [0, 1] with higher values indicating more preferable origins of flights in fares
 OriginScore <- function(origin, fares, airportRegions, nearby=FALSE) {
+  if(is.na(origin)) {
+    return(rep(0, nrow(fares)))
+  }
   ## 1 for exact match to origin
   scores <- ifelse(fares$Origin == origin, 1, 0)
 
@@ -60,6 +63,10 @@ OriginScore <- function(origin, fares, airportRegions, nearby=FALSE, nearbyWeigh
 ##' @import dplyr
 ##' @return scores a vector of scores (length n) in [0, 1] with higher values indicating more preferable dests of flights in fares
 DestScore <- function(dest, fares, airportRegions, nearby=FALSE, nearbyWeight=0.75) {
+  if(is.na(origin)) {
+    return(rep(0, nrow(fares)))
+  }
+
   ## 1 for exact match to dest
   scores <- ifelse(fares$Destination == dest, 1, 0)
 

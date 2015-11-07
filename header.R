@@ -1,5 +1,5 @@
 header <- dashboardHeader(
-  title = "SparseData Cluster",
+  title = "JetBlue Flight Deals",
   ## MESSAGES
   dropdownMenu(
     type = "messages",
@@ -13,14 +13,14 @@ header <- dashboardHeader(
       message = "View Documentation and Source",
       icon = icon("question"),
       ## time = "13:45",
-      href = "https://github.com/sparsedata/cluster-analysis"
+      href = "https://github.com/sparsedata/jb-flight-deals"
     ),
     messageItem(
       from = "Issues",
       message = "Report Issues Here.",
       icon = icon("life-ring"),
       ## time = "2014-12-01",
-      href = "https://github.com/sparsedata/cluster-analysis/issues"
+      href = "https://github.com/sparsedata/jb-flight-deals/issues"
     )
   )#,
   ## ## NOTIFICATIONS

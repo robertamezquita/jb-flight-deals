@@ -8,20 +8,20 @@ sidebar <- dashboardSidebar(
             icon = icon("play")
         ),
         menuItem(
-            "Upload",
-            tabName = "upload",
-            icon = icon("cloud-upload")
+            "Find Deals",
+            tabName = "deals",
+            icon = icon("plane")
         ),
-        menuItem(
-            "Cluster",
-            tabName = "cluster",
-            icon = icon("sitemap")
-        ),
-        menuItem(
-            "Rank",
-            tabName = "ranking",
-            icon = icon("bars")
-        ),
+        ## menuItem(
+        ##     "Cluster",
+        ##     tabName = "cluster",
+        ##     icon = icon("sitemap")
+        ## ),
+        ## menuItem(
+        ##     "Rank",
+        ##     tabName = "ranking",
+        ##     icon = icon("bars")
+        ## ),
         menuItem(
             "Acknowledgements",
             tabName = "acknowledgements",
