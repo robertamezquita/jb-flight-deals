@@ -1,13 +1,13 @@
 deals.box <- fluidPage(
-  headerPanel("Rank Fares"),
-  sidebarPanel(
+  headerPanel(
     inputPanel(
+      selectInput("faretype", "Fare Type", multiple=TRUE,
+                  choices=("dollars", "points"),
+                  selected="dollars")
       checkboxInput("test", label="Check", value=FALSE)
       )
   ),
-  mainPanel(
-    tabsetPanel(type = "tabs",
-                tabPanel("Flights", dataTableOutput("rankTable")))
-  ),
+  DT::dataTableOutput("rankTable"),
+
   includeMarkdown('footer.md')
 )

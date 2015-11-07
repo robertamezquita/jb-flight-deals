@@ -1,9 +1,4 @@
 ## Server.R for deals
-#######################
-## Load in libraries ##
-#######################
-library(dplyr)
-
 dataDir <- "data"
 files <- dir(dataDir, full.names=TRUE)
 names(files) <- basename(files)
@@ -21,13 +16,28 @@ fares <- dat$Fares
 
 ## Create Naive Ranking
 ord <- 1:nrow(fares)
-input <- list()
-input$FareType <- "LOWEST"
 
 ## Display fares
 f <- filter(fares, FareType == input$FareType)
+selCols <- c("FlightDate", "Origin", "Destination", "Price")
 
-output$rankTable <- renderDataTable({
-  f[ord,]
-}, options = list(lengthMenu = c(10, 50, 150), pageLength = 10))
+outDat <- reactive({
+
+
+  input$FareType <- "LOWEST"
+
+})
+
+outDat <- f[ord,]
+
+output$rankTable <- DT::renderDataTable(outDat(),
+                                        rownames=TRUE, # only for testing
+                                        extensions=c("Scroller", "ColReorder", "ColVis"),
+                                        options = list(
+                                          columnDefs = list(list(orderable = FALSE,
+                                            targets = 0:(ncol(f)-1))),
+                                          deferRender = TRUE,
+                                          dom = 'C<"clear">frtSR',
+                                          scrollY = "600px",
+                                          scrollCollapse = TRUE))
 
