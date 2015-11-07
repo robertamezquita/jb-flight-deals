@@ -23,6 +23,7 @@ DestScore <- function(dest, flights, airportRegions, nearby=FALSE, nearbyWeight=
       select(GeographicRegionId)
     codes <- dplyr::filter(airportRegions, GeographicRegionId == as.numeric(geo)) %>%
       select(AirportCode)
+    codes <- setdiff(codes, dest)    
     scores <- scores + ifelse(flights$Destination %in% as.character(codes$AirportCode),
                               nearbyWeight, 0)
   }

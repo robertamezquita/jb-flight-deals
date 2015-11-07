@@ -5,10 +5,10 @@
 ##' @param flights a n x m Data Frame containing Fare information
 ##' @param airportRegions a Data Frame containing mappings between airports and geographic regions
 ##' @param nearby a Flag for whether origins nearby should be searched. If TRUE, other airports in the same geographic area are given weights between 0 and 1.
+##' @param nearbyWeight how much to weight nearby airport codes (only used if nearby is TRUE)
 ##' @import dplyr
 ##' @return scores a vector of scores (length n) in [0, 1] with higher values indicating more preferable origins of flights in flights
-
-OriginScore <- function(origin, flights, airportRegions, nearby=FALSE) {
+OriginScore <- function(origin, flights, airportRegions, nearby=FALSE, nearbyWeight=0.75) {
   if(is.null(origin)) {
     return(rep(0, nrow(flights)))
   }
@@ -21,7 +21,9 @@ OriginScore <- function(origin, flights, airportRegions, nearby=FALSE) {
       select(GeographicRegionId)
     codes <- dplyr::filter(airportRegions, GeographicRegionId == as.numeric(geo)) %>%
       select(AirportCode)
-    scores <- scores + ifelse(flights$Origin %in% as.character(codes$AirportCode), 0.75, 0)
+    codes <- setdiff(codes, origin)
+    scores <- scores + ifelse(flights$Origin %in% as.character(codes$AirportCode),
+                              nearbyWeight, 0)
   }
   return(scores)
 }
