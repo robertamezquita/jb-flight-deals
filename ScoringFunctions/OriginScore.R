@@ -7,6 +7,7 @@
 ##' @param nearby a Flag for whether origins nearby should be searched. If TRUE, other airports in the same geographic area are given weights between 0 and 1.
 ##' @import dplyr
 ##' @return scores a vector of scores (length n) in [0, 1] with higher values indicating more preferable origins of flights in fares
+
 OriginScore <- function(origin, fares, airportRegions, nearby=FALSE) {
   if(is.na(origin)) {
     return(rep(0, nrow(fares)))
