@@ -1,15 +1,30 @@
 ## Server.R for deals
 fares <- dat$Fares
 
-## Create Naive Ranking
-ord <- 1:nrow(fares)
-
 ## Display fares
 
 outDat <- reactive({
 
   selCols <- c("Day", "Time", "Origin", "Destination")
 
+  ## Validate the input
+  validate(
+    need(input$dates[2] > input$dates[1], "end date is earlier than start date")
+  )
+
+
+  ## Create Naive Ranking
+  ## Use:
+  ## input$budget
+  ## input$destType
+  ## input$origin
+  ## input$dest
+  ## input$nonstop (TRUE /FALSE)
+  ## input$dates (vector of length 2)
+  ord <- 1:nrow(fares)
+
+  ## Handle what columns to show depending on whether price should be
+  ## shown as dollars, points, or both
   if(is.null(input$faretype)) {
     return(NULL)
   }
@@ -21,8 +36,11 @@ outDat <- reactive({
     fares$Dollars <- fares$DollarFare + fares$DollarTax
     selCols <- c("Dollars", selCols)
   }
+
+  ## Proof that HTML can be added
   ## fares$Test <- as.character(icon("long-arrow-right"))
   ## selCols <- c(selCols, "Test")
+
   return(fares[ord,selCols])
 })
 
