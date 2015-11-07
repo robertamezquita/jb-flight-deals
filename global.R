@@ -14,3 +14,14 @@ funcs <- dir("ScoringFunctions", full.names=TRUE)
 lapply(funcs, source)                   # source functions
 
 ## Global variables - used across pages and apps
+
+
+## Simple function to print numeric value as money character string
+## printMoney <- function(x, nsmall=0, ...){
+##   if(!all(is.numeric(x))) {
+##     stop("x must be numeric to printMoney")
+##   }
+##   mon <- format(x, digits=10, scientific=FALSE, nsmall=nsmall,
+##                 decimal.mark=".", big.mark=",", ...)
+##   paste("$", mon)
+## }

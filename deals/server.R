@@ -1,14 +1,22 @@
 ## Server.R for deals
-fares <- dat$Fares
 
 ## Determine how budget should show dollars vs points
 observe( {
   if(input$pointsFlag) {
-    budget <- list(min=0, max=max(fares$PointsFare + fares$PointsTax),
-                   tag="points")
+    fares <<- filter(dat$Fares, FareType == "POINTS")
+    ## Points should not include tax
+    fares$Points <<- format(fares$PointsFare, big.mark=",")
+    fares$Tax <<- paste0("$", ceiling(fares$PointsTax))
+    fares$Total <<- paste0(fares$Points, " + ",
+                         "$", ceiling(fares$PointsTax), " tax")
+    budget <- list(min=0, max=max(fares$PointsFare), tag="points")
   } else {
-    budget <- list(min=0, max=max(fares$DollarFare + fares$DollarTax),
-                   tag="dollars")
+    fares <<- filter(dat$Fares, FareType == "LOWEST")
+    ## Show pre-tax cost in dollars to be consistent with points
+    fares$Dollars <<- paste0("$", ceiling(fares$DollarFare))
+    fares$Tax <<- paste0("$", ceiling(fares$DollarTax))
+    fares$Total <<- paste0("$", ceiling(fares$DollarFare + fares$DollarTax))
+    budget <- list(min=0, max=max(fares$DollarFare), tag="dollars")
   }
   output$budget <- renderUI({sliderInput("budget", paste0("Budget (", budget$tag, ")"),
                                          min=budget$min, max=ceiling(budget$max),
@@ -21,18 +29,16 @@ observe( {
 outDat <- reactive({
 
   ## Select appropriate columns based on using points vs dollars
-  selCols <- c("Day", "Time", "Origin", "Destination")  
+  selCols <- c("Day", "Departing")
   if (input$pointsFlag) {
-    fares$Points <- fares$PointsFare + fares$PointsTax
-    selCols <- c("Points", selCols)
+    selCols <- c(selCols, "Points", "Tax", "Total")
   } else {
-    fares$Dollars <- fares$DollarFare + fares$DollarTax
-    selCols <- c("Dollars", selCols)
+    selCols <- c(selCols, "Dollars", "Tax", "Total")
   }
   
   ## Validate the input
   validate(
-    need(input$dates[2] > input$dates[1], "end date is earlier than start date")
+    need(input$dates[2] >= input$dates[1], "end date is earlier than start date")
   )
 
 
@@ -54,9 +60,11 @@ outDat <- reactive({
 
   scoreList <- list()
   scoreList$OriginScore <- OriginScore(input$origin, flights=fares,
-                                       airportRegions=dat$AirportRegion)
+                                       airportRegions=dat$AirportRegion,
+                                       nearby=input$nearbyOrigin)
   scoreList$DestScore <- DestScore(input$dest, flights=fares,
-                                   airportRegions=dat$AirportRegion)
+                                   airportRegions=dat$AirportRegion,
+                                   nearby=input$nearbyDest)
   scoreList$BudgetScore <- BudgetScore(input$budget, flights=fares,
                                        type=ifelse(input$pointsFlag, "points", "dollars"))
   scoreList$CalendarScore <- CalendarScore(dateOutboundStart=input$dates[1],
@@ -64,14 +72,25 @@ outDat <- reactive({
                                            flights=fares, nearbyOutbound=FALSE)
   scoreList$DestinationTypeScore <- DestinationTypeScore(input$destType,
                                                          flights=fares,
+                                                         dat$DestinationType,
                                                          dat$CityPairDestinationType)
   scoreMat <- Reduce(cbind, scoreList)
-  ord <- CumulativeScore(scoreMat)
+  cumScore <- CumulativeScore(scoreMat)
+  fares$Score <- cumScore
 
+  ord <- order(cumScore, decreasing=TRUE)
+
+  ## Make a pretty column
   ## Proof that HTML can be added
-  ## fares$Test <- as.character(icon("long-arrow-right"))
-  ## selCols <- c(selCols, "Test")
+  fares$Route <- paste(as.character(fares$Origin), as.character(icon("long-arrow-right")),
+                       as.character(fares$Destination))
+  selCols <- c("Route", selCols)
 
+  ## Last-minute name changes just for printing
+  colnames(fares) <- gsub("Day", "Date", colnames(fares))
+  selCols <- gsub("Day", "Date", selCols)
+  selCols <- c("Score",selCols)
+  
   return(fares[ord,selCols])
 })
 

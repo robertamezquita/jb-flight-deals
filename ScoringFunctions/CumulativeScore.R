@@ -6,11 +6,10 @@
 ##' coef <- matrix(c(a = .5, b = .6, c = .7), 1, 3) ## row vector
 
 CumulativeScore <- function(scoreMatrix, coef = matrix(rep(1, ncol(scoreMatrix)), nrow = 1)) {
-    ## Multiply coefficients by scoreMatrix & rank order
-    finalrank <- coef %*% t(scoreMatrix) %>%
-      order(decreasing = TRUE)
+    ## Multiply coefficients by scoreMatrix to get score
+    finalscore <- coef %*% t(scoreMatrix)
 
     ## Success??
-    return(finalrank)
+    return(finalscore)
 }
 
