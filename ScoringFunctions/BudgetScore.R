@@ -22,7 +22,7 @@
 
 BudgetScore <- function(budget, flights, type = "dollars") {
     ## Input is not used
-    if (is.na(budget)) {
+    if (is.null(budget)) {
         return(rep(0, nrow(flights)))
     }
     
