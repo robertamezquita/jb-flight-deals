@@ -5,10 +5,11 @@
 ##' ranked such that flights with less than the number of stop(s) are highly scored,
 ##' and those that are not receive decreasing/zero scores.
 ##'
-##' @param timeOutboundStart time for desired outbound flight, or the first availability of a range
-##' @param timeOutboundEnd last availability of a range for outbound flight
-##' @param timeInboundStart time for desired inbound flight, or the first availability of a range
-##' @param timeInboundEnd last availability of a range for inbound flight
+##' @param timeOutboundStart first availability of a range of time for desired outbound flight
+##' @param timeOutboundEnd last availability of a range of time for outbound flight
+##' @param timeInboundStart first availability of a range of time for desired inbound flight
+##' @param timeInboundEnd last availability of a range of time for inbound flight
+##' @param type set a time type for checking intervals (morning, afternoon, evening, redeye)
 ##' @param flights \code{data.frame} of flights with \code{Time}
 ##' 
 ##' @return \code{vector} of values corresponding to ranking of flights
@@ -22,14 +23,18 @@
 
 TimeScore <- function(timeOutboundStart = NULL, timeOutBoundEnd = NULL,
                       timeOutboundType = NULL, timeInboundType = NULL,
+                      type = NULL,
                       flights) {
 
+    ## NOTES:
+    ## timeOutboundStart and End should be specified by slider mechanism, both automagically
+    
     ## Input is not used
-    if (is.na(timeOutboundStart)) {
-        return(rep(0, nrow(flights)))
-    }
+    ## if (is.na(timeOutboundStart)) {
+    ##     return(rep(0, nrow(flights)))
+    ## }
 
-    ## Filter based on =< number of stops
+    ## filter based on =< number of stops
     ## as.Date(flights$FlightDate)
 
     ## ## Success?

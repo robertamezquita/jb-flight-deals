@@ -3,8 +3,10 @@
 ##' Reads in dataset
 ##' Munges together the AirportRegion and DestinationType tables into one
 
-library(dplyr) ## comment later
-library(tidyr) ## comment later
+## Included in global.R
+library(dplyr)
+library(tidyr)
+
 
 dataDir <- "data"
 files <- dir(dataDir, full.names=TRUE)
@@ -20,7 +22,7 @@ dat <- lapply(files, read.csv)
 ## Create Market
 dat$MarketTable <- dplyr::full_join(dat$AirportRegion, dat$GeographicRegion, by = "GeographicRegionId")
 
-## Tidy Date
-dat$Fare <- tidyr::separate(dat$Fares, FlightDate, c("Day", "Time"), sep = " ") %>% head
-
-
+## Tidy Date & Reformat Day and Time columns as such
+dat$Fares <- tidyr::separate(dat$Fares, FlightDate, c("Day", "Time"), sep = " ") 
+dat$Fare$Day <- as.Date(dat$Fare$Day, format = "%m/%d/%Y")
+## dat$Fare$Time <- ??? ## TODO: 

@@ -9,10 +9,10 @@
 ##'          or the first availability of a range
 ##' @param dateOutboundEnd calendar date for end of availability for desired outbound flight
 ##' @param dateInboundStart calendar date for desired inbound flight, 
-##'          or the first availability of a range
-##' @param dateInboundEnd calendar date for end of availability for desired inbound flight
+##'          or the first availability of a range [not used]
+##' @param dateInboundEnd calendar date for end of availability for desired inbound flight [not used]
 ##' @param nearbyOutbound include nearby dates for outbound flights
-##' @param nearbyInbound include nearby dates for inbound flights
+##' @param nearbyInbound include nearby dates for inbound flights [not used]
 ##' @param nearby parameter for max days to include as nearby [default: 3]
 ##' @param flights \code{data.frame} of flights with \code{Day}
 ##' 
@@ -22,11 +22,11 @@
 ##' @import dplyr
 ##' 
 ##' @examples
-##' CalendarScore("2/29/2016", flights = dat$Fare)
-##' CalendarScore("2/29/2016", "3/1/2016", flights = dat$Fare)
+##' CalendarScore("2/29/2016", flights = dat$Fares)
+##' CalendarScore("2/29/2016", "3/1/2016", flights = dat$Fares)
 
 CalendarScore <- function(dateOutboundStart, dateOutboundEnd = NULL,
-                          dateInboundStart, dateInboundEnd = NULL,
+                          dateInboundStart = NULL, dateInboundEnd = NULL,
                           nearbyOutbound = NULL, nearbyInbound = NULL, nearby = 3,
                           flights) {
 
@@ -35,9 +35,10 @@ CalendarScore <- function(dateOutboundStart, dateOutboundEnd = NULL,
         return(rep(0, nrow(flights)))
     }
 
-    ## Filter based on =< number of stops
-    as.Date(flights$FlightDate)
-
+    ## Case: Only single day specified
+    if (is.null(dateOutboundEnd)) {
+        
+    
     ## Success?
     return(rank)
 }
