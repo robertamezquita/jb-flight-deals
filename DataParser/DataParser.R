@@ -22,6 +22,7 @@ dat <- lapply(files, read.csv)
 ## Create Market
 dat$MarketTable <- dplyr::full_join(dat$AirportRegion, dat$GeographicRegion, by = "GeographicRegionId") %>%
   dplyr::full_join(dat$MarketGroup, by = "MarketGroupId")
+dat$TypeTable <- dplyr::full_join(dat$CityPairDestinationType, dat$DestinationType[, 1:2], by = "DestinationTypeId")
 
 ## Tidy Date & Reformat Day and Time columns as such
 dat$Fares <- tidyr::separate(dat$Fares, FlightDate, c("Day", "Time"), sep = " ") 
