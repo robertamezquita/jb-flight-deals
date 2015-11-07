@@ -1,7 +1,7 @@
 deals.box <- fluidPage(
   headerPanel(
     inputPanel(
-      selectInput("faretype", "Fare Type", multiple=TRUE,
+      checkboxGroupInput("faretype", "Fares by",
                   choices=c("dollars", "points"),
                   selected="dollars")
       )

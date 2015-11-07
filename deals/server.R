@@ -1,17 +1,4 @@
 ## Server.R for deals
-dataDir <- "data"
-files <- dir(dataDir, full.names=TRUE)
-names(files) <- basename(files)
-names(files) <- gsub(".csv", "", names(files))
-names(files) <- gsub("-stg", "", names(files), fixed=TRUE)
-names(files) <- gsub("-", "_", names(files), fixed=TRUE)
-names(files) <- gsub(".Fare", "", names(files), fixed=TRUE)
-
-## Read in the data!
-dat <- lapply(files, read.csv)
-
-## EXPLORE
-lapply(dat, head)
 fares <- dat$Fares
 
 ## Create Naive Ranking
@@ -21,26 +8,27 @@ ord <- 1:nrow(fares)
 
 outDat <- reactive({
 
-  selCols <- c("FlightDate", "Origin", "Destination",
-               "DollarFare", "DollarTax", "PointsFare", "PointsTax")
-  ## selCols <- c("FlightDate", "Origin", "Destination", "Price")
+  selCols <- c("Day", "Time", "Origin", "Destination")
 
-  ## if(length(input$faretype) == 2){
-
-  ## }
-  ## if(input$faretype == "dollars") {
-
-  ## } else if (input$faretype == "points") {
-
-  ## } else {
-  ##   stop("'faretype' must be one or more of 'dollars', 'points'")
-  ## }
-
-  fares[ord,selCols]
+  if(is.null(input$faretype)) {
+    return(NULL)
+  }
+  if ("points" %in% input$faretype) {
+    fares$Points <- fares$PointsFare + fares$PointsTax
+    selCols <- c("Points", selCols)
+  }
+  if("dollars" %in% input$faretype) {
+    fares$Dollars <- fares$DollarFare + fares$DollarTax
+    selCols <- c("Dollars", selCols)
+  }
+  ## fares$Test <- as.character(icon("long-arrow-right"))
+  ## selCols <- c(selCols, "Test")
+  return(fares[ord,selCols])
 })
 
 output$rankTable <- DT::renderDataTable(outDat(),
                                         rownames=TRUE, # only for testing
+                                        escape=FALSE,  # for allowing HTML to be rendered
                                         extensions=c("Scroller", "ColReorder", "ColVis"),
                                         options = list(
                                           columnDefs = list(list(orderable = FALSE,
