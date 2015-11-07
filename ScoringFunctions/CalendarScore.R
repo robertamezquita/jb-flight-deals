@@ -5,6 +5,8 @@
 ##' ranked such that flights with less than the number of stop(s) are highly scored,
 ##' and those that are not receive decreasing/zero scores.
 ##'
+##' For these dates, type must be \code{Date} (use \code{as.Date} function)
+##'
 ##' @param dateOutboundStart calendar date for desired outbound flight,
 ##'          or the first availability of a range
 ##' @param dateOutboundEnd calendar date for end of availability for desired outbound flight
@@ -22,12 +24,15 @@
 ##' @import dplyr
 ##' 
 ##' @examples
-##' CalendarScore("2/29/2016", flights = dat$Fares)
-##' CalendarScore("2/29/2016", "3/1/2016", flights = dat$Fares)
+##' out = as.Date("2/29/2016", format = "%m/%d/%Y")
+##' outend = as.Date("2/30/2016", format = "%m/%d/%Y")
+##' CalendarScore(out, flights = dat$Fares)
+##' CalendarScore(out, outend, flights = dat$Fares)
+##' CalendarScore(out, outend, flights = dat$Fares, nearbyOutbound = TRUE, nearby = 5)
 
 CalendarScore <- function(dateOutboundStart, dateOutboundEnd = NULL,
                           dateInboundStart = NULL, dateInboundEnd = NULL,
-                          nearbyOutbound = NULL, nearbyInbound = NULL, nearby = 3,
+                          nearbyOutbound = FALSE, nearbyInbound = NULL, nearby = 3,
                           flights) {
 
     ## Input is not used
@@ -35,10 +40,33 @@ CalendarScore <- function(dateOutboundStart, dateOutboundEnd = NULL,
         return(rep(0, nrow(flights)))
     }
 
-    ## Case: Only single day specified
-    if (is.null(dateOutboundEnd)) {
-        
-    
-    ## Success?
+    ## Case: Nearby flag is false
+    if (nearbyOutbound == FALSE) {
+        ## Subcase: Simple match - end not specified 
+        if (is.null(dateOutboundEnd)) {
+            rank <- (flights$Day == dateOutboundStart) %>% as.numeric
+        } else {
+        ## Subcase: Interval - end specified, but not nearby
+            start <- (flights$Day - dateOutboundStart) >= 0
+            end <- (flights$Day - dateOutboundEnd) <= 0
+            rank <- (start + end) == 2 %>% as.numeric
+        }
+    } else {
+    ## Case: Nearby flag is set
+        ## Subcase: Start only + nearby
+        if (is.null(dateOutboundEnd)) {
+            dateOutboundEnd <- dateOutboundStart + nearby
+        } else {
+        ## Subcase: End is specified
+            dateOutboundEnd <- dateOutboundEnd + nearby
+        }
+        dateOutboundStart <- dateOutboundStart - nearby ## mod Out start after previous block
+        start <- (flights$Day - dateOutboundStart) >= 0
+        end <- (flights$Day - dateOutboundEnd) <= 0
+        rank <- (start + end) == 2 %>% as.numeric
+    }
+
+    ## Success??
     return(rank)
 }
+        

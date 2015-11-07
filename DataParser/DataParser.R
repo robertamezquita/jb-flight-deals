@@ -24,5 +24,5 @@ dat$MarketTable <- dplyr::full_join(dat$AirportRegion, dat$GeographicRegion, by 
 
 ## Tidy Date & Reformat Day and Time columns as such
 dat$Fares <- tidyr::separate(dat$Fares, FlightDate, c("Day", "Time"), sep = " ") 
-dat$Fare$Day <- as.Date(dat$Fare$Day, format = "%m/%d/%Y")
+dat$Fares$Day <- as.Date(dat$Fare$Day, format = "%m/%d/%Y")
 ## dat$Fare$Time <- ??? ## TODO: 
