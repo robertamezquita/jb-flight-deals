@@ -11,6 +11,7 @@
 ##'
 ##' @param geographic string of one geographic region as a \code{GeographicRegionName}
 ##'          (corresponding to 1 = SF Bay, 2 = LA Area, etc. - see dat$GeographicRegion)
+##' @param type one of "Destination" or "Origin"
 ##' @param flights \code{data.frame} of flights with \code{FareType}, \code{DollarFare},
 ##'          \code{DollarTax}, \code{PointsFare}, \code{PointsTax}
 ##' @param marketTable table describing the relationship between \code{GeographicRegionId},
@@ -25,17 +26,20 @@
 ##' @examples
 ##' Geographic("Desert West", dat$Fares, dat$MarketTable)
 
-GeographicScore <- function(geographic, flights, marketTable) {
+GeographicScore <- function(geographic, type=c("Origin", "Destination"),
+                            flights, marketTable) {
     ## Input is not used
     if (is.null(geographic)) {
         return(rep(0, nrow(flights)))
     }
 
+    type <- match.arg(type)
+    
     ## Filter eligible airports based on preferred market
     eligible <- dplyr::filter(marketTable, GeographicRegionName %in% geographic)
 
     ## Score flights based on defined markets above
-    rank <- flights$Destination %in% eligible$AirportCode %>% as.numeric
+    rank <- flights[[type]] %in% eligible$AirportCode %>% as.numeric
 
     ## Success?
     return(rank)

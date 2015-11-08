@@ -20,7 +20,7 @@ observe( {
     fares$Dollars <<- paste0("$", ceiling(fares$DollarFare))
     fares$Tax <<- paste0("$", ceiling(fares$DollarTax))
     fares$Total <<- paste0("$", ceiling(fares$DollarFare + fares$DollarTax))
-    budget <- list(min=0, max=max(fares$DollarFare), tag="dollars")
+    budget <- list(min=0, max=max(fares$DollarFare + fares$DollarTax), tag="dollars")
   }
   output$budget <- renderUI({sliderInput("budget", paste0("Budget (", budget$tag, ")"),
                                          min=budget$min, max=ceiling(budget$max),
@@ -56,21 +56,25 @@ outDat <- reactive({
   ## input$dates (vector of length 2)
 
   ## ## DEBUGGING ONLY:
-  ## input <- list(origin="BDL", dest="MCO", budget=200,
-  ##               dates=as.Date(c("2015-12-20", "2015-12-27")),
-  ##               destType="Family", faretype="dollars")
+  ## input <- c(list(origin="JFK", dest=c("BOS", "MCO", "JAX"),
+  ##                 dates=as.Date(c("2015-10-27", "2015-10-27")),
+  ##                 budget=200,                  
+  ##                 destType="Family", faretype="dollars"))
   ## print("DEBUGGING ON")
   ## ##  
 
+  p <- 1
   scoreList <- list()
-  scoreList$OriginScore <- AirportScore(input$origin, flights=fares,
-                                        type="Origin",
-                                        airportRegions=dat$AirportRegion,
-                                        nearby=input$nearbyOrigin)
-  scoreList$DestScore <- AirportScore(input$dest, flights=fares,
-                                      type="Destination",
-                                      airportRegions=dat$AirportRegion,
-                                      nearby=input$nearbyDest)
+  scoreList$OriginScore <- BoundScore(input$origin, flights=fares,
+                                     type="Origin",
+                                     nearby=input$nearbyOrigin,
+                                     marketTable=dat$MarketTable,
+                                     preferenceStrength=p)
+  scoreList$DestScore <- BoundScore(input$dest, flights=fares,
+                                    type="Destination",
+                                    nearby=input$nearbyDest,
+                                    marketTable=dat$MarketTable,
+                                    preferenceStrength=p)
   scoreList$BudgetScore <- BudgetScore(input$budget, flights=fares,
                                        type=ifelse(input$pointsFlag, "points", "dollars"))
   scoreList$CalendarScore <- CalendarScore(dateOutboundStart=input$dates[1],

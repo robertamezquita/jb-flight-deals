@@ -11,6 +11,7 @@
 ##'
 ##' @param market vector of one market as a \code{MarketGroupName}
 ##'          (corresponding to 1 = California, 2 = Caribbean, etc. - see dat$MarketGroup)
+##' @param type one of "Destination" or "Origin"
 ##' @param flights \code{data.frame} of flights with \code{FareType}, \code{DollarFare},
 ##'          \code{DollarTax}, \code{PointsFare}, \code{PointsTax}
 ##' @param marketTable table describing the relationship between \code{AirportCode},
@@ -25,17 +26,19 @@
 ##' @examples
 ##' MarketScore(1, dat$Fare, dat$MarketTable)
 
-MarketScore <- function(market, flights, marketTable) {
+MarketScore <- function(market, type=c("Origin", "Destination"), flights, marketTable) {
     ## Input is not used
     if (is.null(market)) {
         return(rep(0, nrow(flights)))
     }
 
+    type <- match.arg(type)
+    
     ## Filter eligible airports based on preferred market
     eligible <- dplyr::filter(marketTable, MarketGroupName %in% market)
 
     ## Score flights based on defined markets above
-    rank <- flights$Destination %in% eligible$AirportCode %>% as.numeric
+    rank <- flights[[type]] %in% eligible$AirportCode %>% as.numeric
 
     ## Success?
     return(rank)
