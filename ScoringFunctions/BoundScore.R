@@ -39,17 +39,12 @@ BoundScore <- function(bound, flights, type, nearby, marketTable, preferenceStre
         ## Switch: AirportCode
         if (id["AirportCode"] == TRUE) {
             rankList[[i]] <- AirportScore(bound[i], type, flights, marketTable, nearby)
-            next
-        }
         ## Case: GeographicRegion
-        if (id["GeographicRegionName"] == TRUE) {
-            rankList[[i]] <- GeographicScore(bound[i], flights, marketTable)
-            next
-        }
+        } else if (id["GeographicRegionName"] == TRUE) {
+          rankList[[i]] <- GeographicScore(bound[i], type, flights, marketTable)
         ## Case: MarketGroup
-        if (id["MarketGroupName"] == TRUE) {
-            rankList[[i]] <- MarketScore(bound[i], flights, marketTable)
-            next
+        } else if (id["MarketGroupName"] == TRUE) {
+            rankList[[i]] <- MarketScore(bound[i], type, flights, marketTable)
         }
     }
 
