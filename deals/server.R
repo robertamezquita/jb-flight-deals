@@ -198,9 +198,9 @@ outDat <- reactive({
   selCols <- c("Route", selCols)
 
   ## Last-minute name changes just for printing
-  colnames(fares) <- gsub("Day", "Date", colnames(fares))
+  fares$Date <- format(fares$Day,  "%a %b %d")
   selCols <- gsub("Day", "Date", selCols)
-  selCols <- c("Score",selCols)
+  ## selCols <- c("Score",selCols)
   fares$Match <- paste(round(100 * fares$Score/max(fares$Score), 0), "%")
   selCols <- c("Match",selCols)  
   
@@ -211,13 +211,15 @@ output$rankTable <- DT::renderDataTable(outDat(),
                                         rownames=FALSE, # only TRUE for testing
                                         escape=FALSE,  # for allowing HTML to be rendered
                                         ## extensions=c("Scroller", "ColReorder", "ColVis"),
-                                        extensions=c("Scroller", "ColReorder"),
+                                        extensions=c("Scroller"),
                                         options = list(
-                                          ## columnDefs = list(list(orderable = FALSE,
-                                          ##   targets = 0:(ncol(outDat())-1))),
+                                          columnDefs = list(list(className = "dt-center",
+                                            targets = 0:(ncol(outDat())-1)),
+                                            list(orderable = FALSE,
+                                                 targets = 0:(ncol(outDat())-1))),
                                           deferRender = TRUE,
                                           ## dom = 'C<"clear">frtSR',
-                                          dom = 'tSR',
+                                          dom = 'tS',
                                           scrollY = "600px",
                                           scrollCollapse = TRUE))
 

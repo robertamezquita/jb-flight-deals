@@ -51,20 +51,20 @@ deals.box <- fluidPage(
              condition = "input.advOptions == true",
              h3("Coefficients"),             
              sliderInput("originCoef", h4("From"),
-                         min=0, max=Inf, value=1, step=1),
+                         min=0, max=10, value=1, step=1),
              sliderInput("destCoef", h4("To"),
-                         min=0, max=Inf, value=1, step=1)
+                         min=0, max=10, value=1, step=1)
              )
            ),
     column(3, offset=1,
            conditionalPanel(
              condition = "input.advOptions == true",
              sliderInput("budgetCoef", h4("Budget"),
-                         min=0, max=Inf, value=1, step=1),
+                         min=0, max=10, value=1, step=1),
              sliderInput("calendarCoef", h4("Depart Date"),
-                         min=0, max=Inf, value=1, step=1),
+                         min=0, max=10, value=1, step=1),
              sliderInput("dstCoef", h4("Getaway"),
-                         min=0, max=Inf, value=1, step=1)
+                         min=0, max=10, value=1, step=1)
              )
            )
     
