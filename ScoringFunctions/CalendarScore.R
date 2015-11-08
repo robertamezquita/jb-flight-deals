@@ -35,7 +35,6 @@ CalendarScore <- function(dateOutboundStart, dateOutboundEnd,
                           ## nearbyOutbound = FALSE, nearbyInbound = NULL,
                           ## nearby = 0, ## not used
                           flights) {
-
     ## Input is not used
     if (is.null(dateOutboundStart)) {
         return(rep(0, nrow(flights)))
