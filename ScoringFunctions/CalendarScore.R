@@ -43,17 +43,20 @@ CalendarScore <- function(dateOutboundStart, dateOutboundEnd,
 
     ## Any dates within or on dateOutboundStart/End set to 1
     rank <- rep(0, nrow(flights))
-    diff.s <- as.numeric(dateOutboundStart - flights$Day) ## we want <= 0
-    diff.e <- as.numeric(dateOutboundEnd - flights$Day) ## we want >= 0
+    diff.s <- as.numeric(dateOutboundStart - flights$Day) + 1 ## we want <= 0
+    diff.e <- as.numeric(dateOutboundEnd - flights$Day) - 1 ## we want >= 0
+
+    ## Set intermediate interval between start and end to be 1 in rank
     rank[(diff.s <= 0) + (diff.e >= 0) == 2] <- 1
 
-    ## Any dates outside of it, depending on amount outside thereof
-    ## Transform using the same log transform as budget
-    rank[diff.s > 0] <- rescale(log(diff.s[diff.s > 0]), c(1, 0))
-    rank[diff.e < 0] <- rescale(log(-1 * diff.s[diff.e < 0]), c(1, 0))
+    ## Set values to left of start (before) to be decaying
+    rank[(diff.s > 0)] <- rescale(log(diff.s[diff.s > 0]), c(1, 0))
 
+    ## Set values to right of end (before) to be decaying
+    rank[(diff.e < 0)] <- rescale(log(-1 * diff.e[diff.e < 0]), c(1, 0))
+    
     ## Diagnostic Plot
-    ## plot(1:length(rank), rank[order(flights$Day)])
+    ## plot(flights$Day, rank)
     
     ## Success??
     return(rank)
