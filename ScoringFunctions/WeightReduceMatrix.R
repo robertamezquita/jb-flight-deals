@@ -16,11 +16,14 @@ WeightReduceMatrix <- function(mat, preferenceStrength = 0) {
     ## plot(len, dist, ylim = c(0, 1.5), main = p)
 
     ## Draw from unif + exp function based on number of columns in matrix
-    q <- matrix(quantile(dist, seq(0, 1, length.out = ncol(mat) + 2))[2:(ncol(mat) + 1)],
+    q <- matrix(quantile(dist,
+                         seq(0, 1, length.out = ncol(mat) + 2))[2:(ncol(mat) + 1)],
                 nrow = 1)
+    q <- q[ncol(q):1]                   # reverse the column order
 
     ## Multiple by vec
     vec <- t(q %*% t(mat))
+    vec <- vec/max(vec)                 # return as fraction of largest
 
     ## Success??
     return(vec)

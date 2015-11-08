@@ -12,6 +12,7 @@ library(dplyr)
 library(tidyr)
 source("DataParser/DataParser.R")       # read in data
 funcs <- dir("ScoringFunctions", full.names=TRUE)
+funcs <- grep(".R$", funcs, value=TRUE) # make sure to only source R files
 lapply(funcs, source)                   # source functions
 
 ## Global variables - used across pages and apps

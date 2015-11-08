@@ -19,7 +19,7 @@
 ##'            nearby = TRUE, dat$MarketTable, preferenceStrength = 0)
 
 
-BoundScore <- function(bound, flights, type, type, nearby, marketTable, preferenceStrength = 0) {
+BoundScore <- function(bound, flights, type, nearby, marketTable, preferenceStrength = 0) {
     ## Check if null
     if(is.null(bound)) {
         return(rep(0, nrow(flights)))
@@ -29,10 +29,13 @@ BoundScore <- function(bound, flights, type, type, nearby, marketTable, preferen
     rankList <- list()
     for (i in 1:length(bound)) {
         ## Determine the type that is being considered
-        id <- data.frame(apply(marketTable[, c(1, 4:5)], 2, function(x) {
+      id <- data.frame(t(apply(marketTable[, c("AirportCode", "GeographicRegionName",
+                                             "MarketGroupName")], 2, function(x) {
             bound[i] %in% x
-        }))
+        })))
 
+      ## print(head(id))
+      
         ## Switch: AirportCode
         if (id["AirportCode"] == TRUE) {
             rankList[[i]] <- AirportScore(bound[i], type, flights, marketTable, nearby)
@@ -62,4 +65,3 @@ BoundScore <- function(bound, flights, type, type, nearby, marketTable, preferen
     ## Success?
     return(rank)
 }            
-
