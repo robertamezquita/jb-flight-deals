@@ -18,8 +18,6 @@ addTooltip(session, id = "budget",
            placement = "bottom", trigger = "hover")
 
 
-
-
 ## Determine the appropriate destination ("To") fields based on the origin ("From")
 observe({
   ## If no origin is selected, show everything
@@ -144,12 +142,18 @@ outDat <- reactive({
   ## ## DEBUGGING ONLY:
   ## input <- c(list(origin="JFK", dest=c("BOS", "MCO", "JAX"),
   ##                 dates=as.Date(c("2015-10-27", "2015-10-27")),
-  ##                 budget=200,                  
+  ##                 budget=200,
+  ##                 p <- 0.7
   ##                 destType="Family", faretype="dollars"))
   ## print("DEBUGGING ON")
   ## ##  
 
-  p <- 0.7
+  ## Set `p`, the order importance or preferenceStrength
+  if(is.null(input$p)) {
+    p <- 0.7
+  } else {
+    p <- input$p 
+  }
   scoreList <- list()
   scoreList$OriginScore <- BoundScore(input$origin, flights=fares,
                                      type="Origin",
@@ -172,7 +176,17 @@ outDat <- reactive({
                                                          preferenceStrength=p)
 
   scoreMat <- Reduce(cbind, scoreList)
-  cumScore <- CumulativeScore(scoreMat)
+
+  ## Handle the coeficients (if they exist)
+  if (input$advOptions) {
+    coefs <- c(input$originCoef, input$destCoef,
+               input$budgetCoef, input$calendarCoef,
+               input$dstCoef)
+  } else {
+    coefs <- rep(1, ncol(scoreMat))
+  }
+  ## Calculate the final score
+  cumScore <- CumulativeScore(scoreMat, matrix(coefs, nrow=1))
   fares$Score <- cumScore
 
   ord <- order(cumScore, decreasing=TRUE)
