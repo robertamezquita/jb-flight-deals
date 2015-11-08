@@ -1,8 +1,23 @@
 ## Server.R for deals
 
 ## Add tooltips to UI
-addTooltip(session, id="origin", title = "This is an input.",
-                      placement = "left", trigger = "hover")
+addTooltip(session, id = "nearbyOrigin",
+                title = "Check to include airports nearby those selected",
+                placement = "bottom", trigger = "hover")
+addTooltip(session, id = "nearbyDest",
+                title = "Check to include airports nearby those selected",
+           placement = "bottom", trigger = "hover")
+addTooltip(session, id = "dates",
+                title = "Add Start and End Dates",
+           placement = "bottom", trigger = "hover")
+addTooltip(session, id = "pointsFlag",
+           title = "Check to search by points instead of dollars",
+           placement = "bottom", trigger = "hover")
+addTooltip(session, id = "budget",
+           title = "Position the slider to fit your budget",
+           placement = "bottom", trigger = "hover")
+
+
 
 
 ## Determine the appropriate destination ("To") fields based on the origin ("From")
@@ -17,12 +32,21 @@ observe({
   } else {                              # some origin is selected
     codes <- as.character(unique(unlist(
       filter(dat$Fare, Origin %in% input$origin) %>% select(Destination))))
+    if(input$nearbyOrigin) {
+      if(!is.null(input$origin)) {
+        regs <- dplyr::filter(dat$MarketTable, AirportCode %in% input$origin) %>%
+          select(GeographicRegionName)
+        newcodes <- dplyr::filter(dat$MarketTable, GeographicRegionName %in% regs$GeographicRegionName) %>%
+          select(AirportCode)
+        codes <- c(codes, as.character(newcodes$AirportCode))
+      }
+    } 
     regions <- filter(dat$MarketTable, AirportCode %in% codes) %>%
       select(GeographicRegionName, MarketGroupName)
     regions <- as.character(unique(unlist(regions)))
     choices <- sort(c(codes, regions))
   }
-  output$dest <- renderUI({selectInput("dest", "To", multiple=TRUE, choices=choices)})
+  output$dest <- renderUI({selectInput("dest", h3("To"), multiple=TRUE, choices=choices)})
 })
 
 ## Determine the appropriate origin ("From") fields based on the destination ("To")
@@ -61,7 +85,7 @@ observe({
   ##   }                                 # end for over length of input$dest
   ##   choices <- sort(codes)
   ## }
-  output$dest <- renderUI({selectInput("origin", "From", multiple=TRUE, choices=choices)})
+  output$origin <- renderUI({selectInput("origin", h3("From"), multiple=TRUE, choices=choices)})
 })
 
 
@@ -84,7 +108,7 @@ observe({
     fares$Total <<- paste0("$", ceiling(fares$DollarFare + fares$DollarTax))
     budget <- list(min=0, max=max(fares$DollarFare + fares$DollarTax), tag="dollars")
   }
-  output$budget <- renderUI({sliderInput("budget", paste0("Budget (", budget$tag, ")"),
+  output$budget <- renderUI({sliderInput("budget", h3(paste0("Budget (", budget$tag, ")")),
                                          min=budget$min, max=ceiling(budget$max),
                                          value=mean(c(budget$min, budget$max)),
                                          step=10, round=2)})
@@ -125,19 +149,18 @@ outDat <- reactive({
   ## print("DEBUGGING ON")
   ## ##  
 
-  p1 <- 0.7
-  p2 <- 0.7
+  p <- 0.7
   scoreList <- list()
   scoreList$OriginScore <- BoundScore(input$origin, flights=fares,
                                      type="Origin",
                                      nearby=input$nearbyOrigin,
                                      marketTable=dat$MarketTable,
-                                     preferenceStrength=p1)
+                                      preferenceStrength=p)
   scoreList$DestScore <- BoundScore(input$dest, flights=fares,
                                     type="Destination",
                                     nearby=input$nearbyDest,
                                     marketTable=dat$MarketTable,
-                                    preferenceStrength=p1)
+                                    preferenceStrength=p)
   scoreList$BudgetScore <- BudgetScore(input$budget, flights=fares,
                                        type=ifelse(input$pointsFlag, "points", "dollars"))
   scoreList$CalendarScore <- CalendarScore(dateOutboundStart=input$dates[1],
@@ -146,7 +169,7 @@ outDat <- reactive({
   scoreList$DestinationTypeScore <- DestinationTypeScore(input$destType,
                                                          flights=fares,
                                                          dat$TypeTable,
-                                                         preferenceStrength=p2)
+                                                         preferenceStrength=p)
 
   scoreMat <- Reduce(cbind, scoreList)
   cumScore <- CumulativeScore(scoreMat)
@@ -164,19 +187,23 @@ outDat <- reactive({
   colnames(fares) <- gsub("Day", "Date", colnames(fares))
   selCols <- gsub("Day", "Date", selCols)
   selCols <- c("Score",selCols)
+  fares$Match <- paste(round(100 * fares$Score/max(fares$Score), 0), "%")
+  selCols <- c("Match",selCols)  
   
   return(fares[ord,selCols])
 })
 
 output$rankTable <- DT::renderDataTable(outDat(),
-                                        rownames=TRUE, # only for testing
+                                        rownames=FALSE, # only TRUE for testing
                                         escape=FALSE,  # for allowing HTML to be rendered
-                                        extensions=c("Scroller", "ColReorder", "ColVis"),
+                                        ## extensions=c("Scroller", "ColReorder", "ColVis"),
+                                        extensions=c("Scroller", "ColReorder"),
                                         options = list(
                                           ## columnDefs = list(list(orderable = FALSE,
                                           ##   targets = 0:(ncol(outDat())-1))),
                                           deferRender = TRUE,
-                                          dom = 'C<"clear">frtSR',
+                                          ## dom = 'C<"clear">frtSR',
+                                          dom = 'tSR',
                                           scrollY = "600px",
                                           scrollCollapse = TRUE))
 

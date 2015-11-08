@@ -30,7 +30,7 @@ BudgetScore <- function(budget, flights, type = "dollars") {
     if (type == "dollars") {
         cost <- flights$DollarFare + flights$DollarTax
     } else {
-        cost <- flights$PointsFare + flights$PointsTax
+        cost <- flights$PointsFare
     }
 
     ## Ranking Function
@@ -38,8 +38,15 @@ BudgetScore <- function(budget, flights, type = "dollars") {
     ## with rescaling s.t. values are mapped from 0 -> 1
     diff <- budget - cost
     diff.t <- diff ## transform placeholder
-    diff.t[diff < 0] <- rescale(-1 * log(-1 * diff[diff < 0]), c(0, .5))
-    diff.t[diff >= 0] <- rescale(log(diff[diff >= 0]), c(0.5, 1))
+    if (any(diff < 0)) {
+      diff.t[diff < 0] <- rescale(-1 * log(-1 * diff[diff < 0]), c(0, .5))
+    }
+    if (any(diff > 0)) {
+      diff.t[diff > 0] <- rescale(log(diff[diff > 0]), c(0.5, 1))
+    }
+    if (any(diff == 0)) {
+      diff.t[diff == 0] <- 0.5
+    }
     rank <- diff.t ## as.numeric(cost < budget)
 
     ## Diagnostic Plots of Transform
