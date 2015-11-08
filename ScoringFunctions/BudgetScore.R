@@ -34,12 +34,18 @@ BudgetScore <- function(budget, flights, type = "dollars") {
     }
 
     ## Ranking Function
-    ## Provides 1 and 0 vals for now, but can be
-    ## made to give range based on threshold vs. not
-    ## TODO: weight more heavily the flights that are below budget
-    ##   and decrease weight the further away from budget it is
-    rank <- as.numeric(cost < budget)
+    ## Transforms into a logistic function
+    ## with rescaling s.t. values are mapped from 0 -> 1
+    diff <- budget - cost
+    diff.t <- diff ## transform placeholder
+    diff.t[diff < 0] <- rescale(-1 * log(-1 * diff[diff < 0]), c(0, .5))
+    diff.t[diff >= 0] <- rescale(log(diff[diff >= 0]), c(0.5, 1))
+    rank <- diff.t ## as.numeric(cost < budget)
 
+    ## Diagnostic Plots of Transform
+    ## plot(diff[diff < 0], diff.t[diff < 0])
+    ## plot(diff[diff >= 0], diff.t[diff >= 0])
+    
     ## Success?
     return(rank)
 }
