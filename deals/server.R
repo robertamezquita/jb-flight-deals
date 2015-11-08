@@ -183,7 +183,7 @@ outDat <- reactive({
                input$budgetCoef, input$calendarCoef,
                input$dstCoef)
   } else {
-    coefs <- rep(1, ncol(scoreMat))
+    coefs <- c(2, 2, 1, 5, 1)
   }
   ## Calculate the final score
   cumScore <- CumulativeScore(scoreMat, matrix(coefs, nrow=1))
@@ -201,7 +201,7 @@ outDat <- reactive({
   fares$Date <- format(fares$Day,  "%a %b %d")
   selCols <- gsub("Day", "Date", selCols)
   ## selCols <- c("Score",selCols)
-  fares$Match <- paste(round(100 * fares$Score/max(fares$Score), 0), "%")
+  fares$Match <- paste(floor(100 * fares$Score/max(fares$Score)), "%")
   selCols <- c("Match",selCols)  
   
   return(fares[ord,selCols])
