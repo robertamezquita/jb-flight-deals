@@ -125,27 +125,29 @@ outDat <- reactive({
   ## print("DEBUGGING ON")
   ## ##  
 
-  p <- 1
+  p1 <- 0.7
+  p2 <- 0.7
   scoreList <- list()
   scoreList$OriginScore <- BoundScore(input$origin, flights=fares,
                                      type="Origin",
                                      nearby=input$nearbyOrigin,
                                      marketTable=dat$MarketTable,
-                                     preferenceStrength=p)
+                                     preferenceStrength=p1)
   scoreList$DestScore <- BoundScore(input$dest, flights=fares,
                                     type="Destination",
                                     nearby=input$nearbyDest,
                                     marketTable=dat$MarketTable,
-                                    preferenceStrength=p)
+                                    preferenceStrength=p1)
   scoreList$BudgetScore <- BudgetScore(input$budget, flights=fares,
                                        type=ifelse(input$pointsFlag, "points", "dollars"))
   scoreList$CalendarScore <- CalendarScore(dateOutboundStart=input$dates[1],
                                            dateOutboundEnd=input$dates[2],
-                                           flights=fares, nearbyOutbound=FALSE)
+                                           flights=fares)
   scoreList$DestinationTypeScore <- DestinationTypeScore(input$destType,
                                                          flights=fares,
-                                                         dat$DestinationType,
-                                                         dat$CityPairDestinationType)
+                                                         dat$TypeTable,
+                                                         preferenceStrength=p2)
+
   scoreMat <- Reduce(cbind, scoreList)
   cumScore <- CumulativeScore(scoreMat)
   fares$Score <- cumScore

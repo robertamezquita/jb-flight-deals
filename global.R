@@ -8,6 +8,7 @@ library(shinydashboard)
 library(shinyapps)
 library(markdown)
 library(DT)                     # Interface to the DataTables javascript library
+library(scales)
 library(dplyr)
 library(tidyr)
 source("DataParser/DataParser.R")       # read in data
